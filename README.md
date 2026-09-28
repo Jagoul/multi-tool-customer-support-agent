@@ -506,7 +506,7 @@ return-window rules behave the same whenever you run it.
 
 | Requirement ([PROJECT.md](PROJECT.md)) | Where it is implemented | How it is verified |
 |---|---|---|
-| 3-4 MCP tools with detailed descriptions that separate purpose, inputs, and limits, including tools with similar functionality | `tools.py` (four tools, template descriptions), `mcp_server.py` | `test_tools.py`, `test_mcp_server.py` |
+| Several MCP tools with detailed descriptions that separate purpose, inputs, and limits, including tools with similar functionality | `tools.py` (four tools, template descriptions), `mcp_server.py` | `test_tools.py`, `test_mcp_server.py` |
 | Design first, in Mermaid, as the README front page | Sections 1-7 of this README | |
 | An agentic loop that routes on `stop_reason` and handles `tool_use` and `end_turn` | `SupportAgent.send` in `agent.py` | `test_agent_loop.py` |
 | Structured errors with `errorCategory`, `isRetryable`, and a description; retry transient errors, explain business errors | `errors.py`, `backend.py`, error rules in `prompts.py` | `test_tools.py` (contract), `test_agent_loop.py` (plumbing), live `transient_then_business_error`, `validation_error`, `permission_error` |
