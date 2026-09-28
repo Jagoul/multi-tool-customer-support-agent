@@ -18,7 +18,7 @@ escalation patterns.
 
 ## Tasks
 
-1. Define 3-4 MCP tools with detailed descriptions that clearly differentiate each tool's purpose,
+1. Define MCP tools with detailed descriptions that clearly differentiate each tool's purpose,
    expected inputs, and boundary conditions. Include at least two tools with similar functionality that
    require careful description to avoid selection confusion.
 2. Start with the design first, using Mermaid diagrams, and put it in the README. This folder ships to
@@ -35,5 +35,4 @@ escalation patterns.
    operations above a threshold amount), redirecting to an escalation workflow when triggered.
 6. Test with multi-concern messages (e.g., requests involving multiple issues) and verify the agent
    decomposes the request, handles each concern, and synthesizes a unified response.
-7. When done, review the README and make sure it explains everything that was built.
 
