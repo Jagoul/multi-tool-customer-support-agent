@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.py[oc]
+build/
+dist/
+*.egg-info
+
+# Environments and secrets
+.venv/
+.env
+
+# Tooling
+.pytest_cache/

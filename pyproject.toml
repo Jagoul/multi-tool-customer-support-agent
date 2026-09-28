@@ -1,0 +1,33 @@
+[project]
+name = "support-agent"
+version = "0.1.0"
+description = "Multi-Tool Customer Support Agent on Claude: MCP tools, a stop_reason-driven agentic loop, structured errors, and policy hooks that escalate to humans."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic>=1.8",
+    "claude-agent-sdk>=0.2.160",
+    "jsonschema>=4.20",
+    "mcp>=2.2",
+    "python-dotenv>=1.0",
+]
+
+[project.scripts]
+support-agent = "support_agent.cli:main"
+support-mcp-server = "support_agent.mcp_server:main"
+
+[build-system]
+requires = ["uv_build>=0.12.15,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-m 'not live'"
+markers = [
+    "live: calls the real Claude API (needs ANTHROPIC_API_KEY); run with `pytest -m live`",
+]
