@@ -16,7 +16,7 @@ from support_agent.policy import SupportPolicy, blocked_result
 from support_agent.prompts import SYSTEM_PROMPT
 from support_agent.tools import ToolResult
 
-DEFAULT_MODEL = "claude-opus-5"
+DEFAULT_MODEL = "claude-sonnet-5-5"
 FALLBACK_BETA = "server-side-fallback-2026-07-01"
 
 ITERATION_CAP_MESSAGE = (
