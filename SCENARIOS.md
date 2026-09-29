@@ -135,6 +135,11 @@ uv run support-agent eval --scenario multi_concern_refunds
 
 **Expected sequence:**
 
+![Scenario 1: Multi-concern refunds](docs/diagrams/scenarios-01-scenario-1-multi-concern-refunds.png)
+
+<details>
+<summary>Diagram source (Mermaid)</summary>
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -165,6 +170,8 @@ sequenceDiagram
     C-->>L: end_turn
     L->>U: one reply covering all three concerns
 ```
+
+</details>
 
 **What to look for in the trace:**
 - An iteration with **three `lookup_order` calls together**: parallel investigation.
@@ -218,6 +225,11 @@ uv run support-agent eval --scenario duplicate_charge
 
 **Expected sequence:**
 
+![Scenario 2: Duplicate charge](docs/diagrams/scenarios-02-scenario-2-duplicate-charge.png)
+
+<details>
+<summary>Diagram source (Mermaid)</summary>
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -242,6 +254,8 @@ sequenceDiagram
     C-->>L: end_turn
     L->>U: duplicate refunded, refund ID, timeline
 ```
+
+</details>
 
 **What to look for in the trace:** `lookup_order` returns a charge flagged `possible_duplicate`,
 then **one** `process_refund` for **$129.99**, the duplicate only, not the full $259.98 charged.
@@ -284,6 +298,11 @@ uv run support-agent eval --scenario transient_then_business_error
 
 **Expected sequence:**
 
+![Scenario 3: Transient error, then a business error](docs/diagrams/scenarios-03-scenario-3-transient-error-then-a-business-error.png)
+
+<details>
+<summary>Diagram source (Mermaid)</summary>
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -308,6 +327,8 @@ sequenceDiagram
     C-->>L: end_turn
     L->>U: the 30-day window has closed, plus the options that remain
 ```
+
+</details>
 
 **What to look for in the trace:**
 - `lookup_order ... error transient/ORDER_SERVICE_TIMEOUT (isRetryable=True)`, then the **same
@@ -361,6 +382,11 @@ uv run support-agent eval --scenario validation_error
 
 **Expected sequence:**
 
+![Scenario 4: Validation error](docs/diagrams/scenarios-04-scenario-4-validation-error.png)
+
+<details>
+<summary>Diagram source (Mermaid)</summary>
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -390,6 +416,8 @@ sequenceDiagram
     C-->>L: end_turn
     L->>U: please confirm the email on your account
 ```
+
+</details>
 
 **What to look for in the trace:** `get_customer ... error validation/CUSTOMER_NOT_FOUND`, then a
 reply that asks the customer to double-check the email. Claude may also look up ORD-1002. If it
@@ -447,6 +475,11 @@ uv run support-agent eval --scenario permission_error
 
 **Expected sequence:**
 
+![Scenario 5: Permission error](docs/diagrams/scenarios-05-scenario-5-permission-error.png)
+
+<details>
+<summary>Diagram source (Mermaid)</summary>
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -476,6 +509,8 @@ sequenceDiagram
     C-->>L: end_turn
     L->>U: can't refund now, specialist ticket ESC-5001
 ```
+
+</details>
 
 **What to look for in the trace:** `process_refund ... error permission/ACCOUNT_REFUNDS_RESTRICTED
 (isRetryable=False)`, then **no second `process_refund`**, then an `escalate_to_human` call. Note
@@ -520,6 +555,11 @@ uv run support-agent eval --scenario explicit_human_request
 
 **Expected sequence:**
 
+![Scenario 6: Explicit request for a human](docs/diagrams/scenarios-06-scenario-6-explicit-request-for-a-human.png)
+
+<details>
+<summary>Diagram source (Mermaid)</summary>
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -542,6 +582,8 @@ sequenceDiagram
     C-->>L: end_turn
     L->>U: apology, ticket ESC-5001, expected response time
 ```
+
+</details>
 
 **What to look for in the trace:** an `escalate_to_human` call with
 `"reason_category": "customer_requested_human"`. Look at its `summary`: it should make sense to a
@@ -582,6 +624,11 @@ uv run support-agent eval --scenario multi_concern_out_of_scope
 
 **Expected sequence:**
 
+![Scenario 7: Multi-concern with an out-of-scope request](docs/diagrams/scenarios-07-scenario-7-multi-concern-with-an-out-of-scope-re.png)
+
+<details>
+<summary>Diagram source (Mermaid)</summary>
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -604,6 +651,8 @@ sequenceDiagram
     C-->>L: end_turn
     L->>U: jacket arrives on date X, address change ticket ESC-5001
 ```
+
+</details>
 
 **What to look for in the trace:** a `lookup_order` for ORD-1005 marked `ok`, then an
 `escalate_to_human` with `"reason_category": "out_of_scope_request"` about the address only. The

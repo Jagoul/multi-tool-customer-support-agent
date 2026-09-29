@@ -46,6 +46,11 @@ enforced by a **programmatic hook** that redirects risky actions into an escalat
 
 ## 1. Architecture
 
+![Architecture](docs/diagrams/readme-01-architecture.png)
+
+<details>
+<summary>Diagram source (Mermaid)</summary>
+
 ```mermaid
 flowchart LR
     customer(["Customer"]):::actor
@@ -89,6 +94,8 @@ flowchart LR
     classDef data fill:#f1f5f9,stroke:#475569,color:#0f172a
 ```
 
+</details>
+
 | Component | Responsibility | Module |
 |---|---|---|
 | **Agentic loop** | Sends the conversation to Claude and routes on `stop_reason`. Runs tools, returns results, and stops on `end_turn`. | `agent.py` |
@@ -105,6 +112,11 @@ flowchart LR
 ## 2. The agentic loop
 
 The loop decides what happens next from the API's `stop_reason`, never from the text of the reply.
+
+![The agentic loop](docs/diagrams/readme-02-the-agentic-loop.png)
+
+<details>
+<summary>Diagram source (Mermaid)</summary>
 
 ```mermaid
 flowchart TD
@@ -134,6 +146,8 @@ flowchart TD
     classDef policy fill:#fef3c7,stroke:#d97706,color:#78350f
     classDef human fill:#fee2e2,stroke:#dc2626,color:#7f1d1d
 ```
+
+</details>
 
 | `stop_reason` | Meaning | Loop behaviour |
 |---|---|---|
@@ -177,6 +191,11 @@ Two pairs of tools overlap, and their descriptions are written to separate them:
   is for refunds within policy and the agent's authority. `escalate_to_human` is for anything outside
   that: policy exceptions, restricted accounts, or a customer who asks for a person.
 
+![Choosing between similar tools](docs/diagrams/readme-03-choosing-between-similar-tools.png)
+
+<details>
+<summary>Diagram source (Mermaid)</summary>
+
 ```mermaid
 flowchart TD
     need{"What does this concern<br/>need right now?"}:::policy
@@ -194,6 +213,8 @@ flowchart TD
     classDef policy fill:#fef3c7,stroke:#d97706,color:#78350f
     classDef human fill:#fee2e2,stroke:#dc2626,color:#7f1d1d
 ```
+
+</details>
 
 Each description follows the same template, so Claude can compare the tools directly:
 
@@ -241,6 +262,11 @@ result's `isError` flag set.
 > a policy outcome the agent has to *explain* to the customer. Keeping it separate lets the agent
 > respond correctly.
 
+![Structured error responses](docs/diagrams/readme-04-structured-error-responses.png)
+
+<details>
+<summary>Diagram source (Mermaid)</summary>
+
 ```mermaid
 flowchart LR
     result["tool_result"]:::agent --> isErr{"is_error?"}:::policy
@@ -259,6 +285,8 @@ flowchart LR
     classDef human fill:#fee2e2,stroke:#dc2626,color:#7f1d1d
 ```
 
+</details>
+
 ---
 
 ## 5. Policy hook: enforce the refund limit and redirect to escalation
@@ -271,6 +299,11 @@ A prompt instruction such as "never refund more than $500" works *most* of the t
 | **Refund limit** | `process_refund` with `amount` above `$500` (configurable) | **Block** the call, then **open an escalation ticket automatically** with a structured handoff | `permission` / `REFUND_REQUIRES_HUMAN_APPROVAL`, plus the ticket ID and queue |
 | **Verified identity first** | `process_refund` for a `customer_id` that `get_customer` hasn't returned in this conversation | **Block** the call | `validation` / `IDENTITY_NOT_VERIFIED`: "call `get_customer` first" |
 | **Identifiers come from the customer** | `get_customer` with an email or customer ID that doesn't appear in anything the customer wrote (a "corrected" typo, or an ID read from an order) | **Block** the call | `validation` / `IDENTIFIER_NOT_FROM_CUSTOMER`: "ask the customer to confirm, never guess" |
+
+![Policy hook: enforce the refund limit and redirect to escalation](docs/diagrams/readme-05-policy-hook-enforce-the-refund-limit-and-redirec.png)
+
+<details>
+<summary>Diagram source (Mermaid)</summary>
 
 ```mermaid
 sequenceDiagram
@@ -291,6 +324,8 @@ sequenceDiagram
     C->>L: end_turn with a reply that relays ticket ESC-5001
 ```
 
+</details>
+
 The refund limit is **not stated in the system prompt**. The policy lives in one place, the hook. The
 model finds out about the limit only when a refund is blocked, and it gets a ticket to pass on to the
 customer. The prompt tells it not to escalate the same refund twice.
@@ -301,6 +336,11 @@ customer. The prompt tells it not to escalate the same refund twice.
 
 Customers often raise several problems in one message. The system prompt tells the agent to
 **decompose → verify → investigate in parallel → act per concern → reply once**.
+
+![Multi-concern requests](docs/diagrams/readme-06-multi-concern-requests.png)
+
+<details>
+<summary>Diagram source (Mermaid)</summary>
 
 ```mermaid
 sequenceDiagram
@@ -326,6 +366,8 @@ sequenceDiagram
     C-->>L: end_turn with one reply covering all three concerns
     L->>U: Refunded, refunded, escalated with ticket ID
 ```
+
+</details>
 
 The final reply takes each concern in order and gives its outcome, reference IDs (refund IDs or
 ticket ID), and what happens next.
@@ -567,6 +609,8 @@ return-window rules behave the same whenever you run it.
 ├── SCENARIOS.md              how to run each scenario: commands, sequences, sample runs
 ├── pyproject.toml            metadata, dependencies, CLI entry points
 ├── .env.example              configuration template
+├── docs/diagrams/            PNG renders of every Mermaid diagram (for the GitHub mobile app)
+├── scripts/render_diagrams.py  re-render docs/diagrams/ after editing a Mermaid block
 ├── src/support_agent/
 │   ├── agent.py              manual stop_reason loop and MCP client
 │   ├── sdk_agent.py          Claude Agent SDK runtime with the PreToolUse hook
